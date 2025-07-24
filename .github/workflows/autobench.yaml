@@ -44,3 +44,15 @@ jobs:
               repo: context.repo.repo,
               body: 'Autobench Started benchmark:\n - **Branch:** `${{ steps.prep_vars.outputs.branch }}` \n **Issue number:* `${{ context.issue.number }}` \n - **Arguments:** `${{ steps.prep_vars.outputs.args }}`'
             })
+
+      - name: Trigger benchmark
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.BENCHMARK_API_KEY }}" \
+            -d '{
+              "branch": "${{ steps.prep_vars.outputs.branch }}",
+              "args": "${{ steps.prep_vars.outputs.args }}",
+              "issue_number": "${{ github.event.issue.number }}"
+            }' \
+            ${{ secrets.BENCHMARK_ENDPOINT }}
