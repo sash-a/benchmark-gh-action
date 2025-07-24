@@ -1,0 +1,39 @@
+name: Autobench
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  autobench:
+    if: |
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/autobench') &&
+      (github.event.comment.author_association == 'OWNER' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'COLLABORATOR')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR branch name
+        id: get_branch
+        uses: xt0rted/pull-request-comment-branch@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get comment body
+        id: get_comment
+        run: echo "comment_body=${{ github.event.comment.body }}" >> $GITHUB_OUTPUT
+
+      - name: Prepare Autobench Variables
+        id: prep_vars
+        run: |
+          echo "branch=${{ steps.get_branch.outputs.head_ref }}" >> $GITHUB_OUTPUT
+          echo "args=$(echo "${{ github.event.comment.body }}" | sed -e 's/^\/autobench//' -e 's/^[ \t]*//' -e 's/[ \t]*$//')" >> $GITHUB_OUTPUT
+
+      - name: Create test comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Autobench test run:
+            - **Branch:** `${{ steps.prep_vars.outputs.branch }}`
+            - **Arguments:** `${{ steps.prep_vars.outputs.args }}`
+
