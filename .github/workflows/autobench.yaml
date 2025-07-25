@@ -45,14 +45,18 @@ jobs:
               body: 'Autobench Started benchmark:\n - **Branch:** `${{ steps.prep_vars.outputs.branch }}` \n **Issue number:* `${{ context.issue.number }}` \n - **Arguments:** `${{ steps.prep_vars.outputs.args }}`'
             })
 
-      - name: Trigger benchmark
-        run: |
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.BENCHMARK_API_KEY }}" \
-            -d '{
-              "branch": "${{ steps.prep_vars.outputs.branch }}",
-              "args": "${{ steps.prep_vars.outputs.args }}",
-              "issue_number": "${{ github.event.issue.number }}"
-            }' \
-            ${{ secrets.BENCHMARK_ENDPOINT }}
+      # - name: Trigger benchmark
+      #   run: |
+      #     curl -X POST \
+      #       --header "Content-Type: application/json" \  # specifies we are sending json data
+      #       --header "Authorization: Bearer ${{ secrets.BENCHMARK_API_KEY }}" \
+      #       --data '{
+      #         "branch": "${{ steps.prep_vars.outputs.branch }}",
+      #         "args": "${{ steps.prep_vars.outputs.args }}",
+      #         "issue_number": "${{ github.event.issue.number }}"
+      #       }' \
+      #       ${{ secrets.BENCHMARK_ENDPOINT }}
+      
+      
+# TODO: output the response as a comment
+# neptune IDs + a link to the run
