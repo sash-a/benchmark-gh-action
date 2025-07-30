@@ -51,10 +51,10 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const body = `Autobench Started benchmark:
-            # - **Neptune link:** https://app.neptune.ai/o/InstaDeep/org/mava-benchmark/runs/table?query=(%60sys%2Fid%60%3Astring%20CONTAINS%20%22${{ steps.prep_vars.outputs.neptune_id }%22)&lbViewUnpacked=true
             - **Branch:** ${{ steps.prep_vars.outputs.branch }}
             - **Issue number:** ${{ context.issue.number }}
             - **Arguments:** ${{ steps.prep_vars.outputs.args }}`;
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
