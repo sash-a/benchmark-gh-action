@@ -43,3 +43,6 @@ def parse_args():
 
 if __name__ == "__main__":
     print(parse_args())
+
+    # const neptuneId = `${{ steps.prep_vars.outputs.neptune_id }}`;
+    # const neptuneLink = `https://app.neptune.ai/o/InstaDeep/org/mava-benchmark/runs/table?query=(%60sys%2Fid%60%3Astring%20CONTAINS%20%22${neptuneId}%22)&lbViewUnpacked=true`;
