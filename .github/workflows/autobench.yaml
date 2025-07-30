@@ -50,7 +50,11 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const neptuneId = `${{ steps.prep_vars.outputs.neptune_id }}`;
+            const neptuneLink = `https://app.neptune.ai/o/InstaDeep/org/mava-benchmark/runs/table?query=(%60sys%2Fid%60%3Astring%20CONTAINS%20%22${neptuneId}%22)&lbViewUnpacked=true`;
+
             const body = `Autobench Started benchmark:
+            - **Neptune Link:** ${neptuneLink}
             - **Branch:** ${{ steps.prep_vars.outputs.branch }}
             - **Issue number:** ${context.issue.number}
             - **Arguments:** ${{ steps.prep_vars.outputs.args }}`;
