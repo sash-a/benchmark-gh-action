@@ -17,6 +17,11 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: going to need to install deps also
+
       - name: Get PR branch name
         id: get_branch
         uses: xt0rted/pull-request-comment-branch@v2
@@ -32,6 +37,13 @@ jobs:
         run: |
           echo "branch=${{ steps.get_branch.outputs.head_ref }}" >> $GITHUB_OUTPUT
           echo "args=$(echo "${{ github.event.comment.body }}" | sed -e 's/^\/autobench//' -e 's/^[ \t]*//' -e 's/[ \t]*$//')" >> $GITHUB_OUTPUT
+          DD=$(date +'%d')
+          MM=$(date +'%m')
+          RAND_INT=$(shuf -i 1000-9999 -n 1)
+          echo "neptune_id=${{ github.event.issue.number }}-${DD}-${MM}-${RAND_INT}" >> $GITHUB_OUTPUT
+
+      - name: Launch benchmark
+        run: python test.py ${{ steps.prep_vars.args }} --branches develop ${{ steps.prep_vars.outputs.branch }} --neptune_id=${{ steps.prep_vars.neptune_id }}
 
       - name: Notify started benchmark
         uses: actions/github-script@v7
@@ -39,8 +51,9 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const body = `Autobench Started benchmark:
+            # - **Neptune link:** https://app.neptune.ai/o/InstaDeep/org/mava-benchmark/runs/table?query=(%60sys%2Fid%60%3Astring%20CONTAINS%20%22${{ steps.prep_vars.outputs.neptune_id }%22)&lbViewUnpacked=true
             - **Branch:** ${{ steps.prep_vars.outputs.branch }}
-            - **Issue number:** ${context.issue.number}
+            - **Issue number:** ${{ context.issue.number }}
             - **Arguments:** ${{ steps.prep_vars.outputs.args }}`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -48,19 +61,3 @@ jobs:
               repo: context.repo.repo,
               body: body
             })
-
-      # - name: Trigger benchmark
-      #   run: |
-      #     curl -X POST \
-      #       --header "Content-Type: application/json" \  # specifies we are sending json data
-      #       --header "Authorization: Bearer ${{ secrets.BENCHMARK_API_KEY }}" \
-      #       --data '{
-      #         "branch": "${{ steps.prep_vars.outputs.branch }}",
-      #         "args": "${{ steps.prep_vars.outputs.args }}",
-      #         "issue_number": "${{ github.event.issue.number }}"
-      #       }' \
-      #       ${{ secrets.BENCHMARK_ENDPOINT }}
-      
-      
-# TODO: output the response as a comment
-# neptune IDs + a link to the run
