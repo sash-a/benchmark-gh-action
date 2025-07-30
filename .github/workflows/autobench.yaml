@@ -52,7 +52,7 @@ jobs:
           script: |
             const body = `Autobench Started benchmark:
             - **Branch:** ${{ steps.prep_vars.outputs.branch }}
-            - **Issue number:** ${{ context.issue.number }}
+            - **Issue number:** ${context.issue.number}
             - **Arguments:** ${{ steps.prep_vars.outputs.args }}`;
 
             github.rest.issues.createComment({
