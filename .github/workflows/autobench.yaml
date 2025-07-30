@@ -43,8 +43,7 @@ jobs:
           echo "neptune_id=${{ github.event.issue.number }}-${DD}-${MM}-${RAND_INT}" >> $GITHUB_OUTPUT
 
       - name: Launch benchmark
-        uses: actions/github-script@v7
-        run: python test.py ${{ steps.prep_vars.args }} --branches develop ${{ steps.prep_vars.outputs.branch }} --neptune_id ${{ steps.prep_vars.neptune_id }}
+        run: python test.py ${{ steps.prep_vars.outputs.args }} --branches develop ${{ steps.prep_vars.outputs.branch }} --neptune_id ${{ steps.prep_vars.outputs.neptune_id }}
 
       - name: Notify started benchmark
         uses: actions/github-script@v7
