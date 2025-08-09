@@ -20,7 +20,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # TODO: going to need to install deps also
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.8"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"  # invalidate cache when requirements file changes
+
+      - name: Install python dependencies 🔧
+        run: uv sync --locked --only-group autobench
 
       - name: Get PR branch name
         id: get_branch
@@ -43,7 +51,7 @@ jobs:
           echo "neptune_id=${{ github.event.issue.number }}-${DD}-${MM}-${RAND_INT}" >> $GITHUB_OUTPUT
 
       - name: Launch benchmark
-        run: python test.py ${{ steps.prep_vars.outputs.args }} --branches develop ${{ steps.prep_vars.outputs.branch }} --neptune_id ${{ steps.prep_vars.outputs.neptune_id }}
+        run: uv run test.py --systems ${{ steps.prep_vars.outputs.args }} --branches develop ${{ steps.prep_vars.outputs.branch }} --neptune-id ${{ steps.prep_vars.outputs.neptune_id }}
 
       - name: Notify started benchmark
         uses: actions/github-script@v7

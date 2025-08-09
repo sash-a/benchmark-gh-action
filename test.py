@@ -1,4 +1,6 @@
 import argparse
+import hydra
+import pandas
 
 
 def parse_args():
@@ -32,8 +34,7 @@ def parse_args():
         help="Seeds to run",
     )
     parser.add_argument(
-        "--neptune_id",
-        nargs=1,
+        "--neptune-id",
         type=str,
         default="",
         help="Prefix of the neptune ID for this group of runs",
